@@ -1,0 +1,42 @@
+name: Acquire P0 P1 source bytes
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [p0-p1-acquisition]
+
+permissions:
+  contents: read
+
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        repo:
+          - tokushige-koyasan/gretil-corpus
+          - VedaWebProject/vedaweb-data
+          - sanskrit-texts/rigveda
+          - tokushige-koyasan/dcs-corpus
+          - AnotherAdhikari/indic-primary-sources
+          - rahular/itihasa
+          - tokushige-koyasan/muktabodha-corpus
+          - maximally0/jyotisha-corpus
+          - sanskrit/raw_etexts
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repo }}
+          fetch-depth: 1
+      - run: |
+          mkdir -p acquired
+          echo "${{ matrix.repo }}" > acquired/source.txt
+          git rev-parse HEAD > acquired/upstream_commit.txt
+          tar -czf "source-${{ matrix.repo }}" acquired .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: p0-p1-${{ matrix.repo }}
+          path: source-${{ matrix.repo }}
+          retention-days: 30
