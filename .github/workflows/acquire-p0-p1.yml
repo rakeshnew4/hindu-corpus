@@ -47,23 +47,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}
-          ref: p0-p1-data
+          ref: main
           fetch-depth: 1
           path: _target
           token: ${{ github.token }}
-        continue-on-error: true
-      - name: Initialize target branch if needed
+      - name: Initialize target branch
         shell: bash
         run: |
           set -euo pipefail
-          if [ ! -d _target/.git ]; then
-            rm -rf _target
-            git clone --depth=1 "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" _target
-            cd _target
-            git checkout -b p0-p1-data origin/main || git checkout p0-p1-data
+          cd _target
+          git fetch origin p0-p1-data:p0-p1-data || true
+          if git show-ref --verify --quiet refs/heads/p0-p1-data; then
+            git checkout p0-p1-data
+          else
+            git checkout -b p0-p1-data origin/main
           fi
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
       - name: Package source and publish
         shell: bash
         run: |
