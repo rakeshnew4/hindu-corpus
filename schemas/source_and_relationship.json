@@ -1,0 +1,38 @@
+{
+  "source_record": {
+    "source_id": "string",
+    "document_id": "string",
+    "phase": "P0|P1",
+    "tradition": "string",
+    "title": "string",
+    "author": "string|null",
+    "language": "string",
+    "script": "string|null",
+    "recension": "string|null",
+    "period": "string|null",
+    "section": "string|null",
+    "verse": "string|null",
+    "original_text": "string",
+    "transliteration": "string|null",
+    "translation": "string|null",
+    "commentary": "string|null",
+    "source_url": "string",
+    "license": "string",
+    "upstream_commit": "string",
+    "sha256": "string"
+  },
+  "relationship_record": {
+    "relationship_id": "string",
+    "source_a": "string",
+    "concept_a": "string",
+    "source_b": "string",
+    "concept_b": "string",
+    "relationship_type": "textual|historical|linguistic|phenomenological|physiological|neural|ritual|analogical|hypothesis|contradiction|unknown",
+    "claim": "string",
+    "supporting_evidence": "string[]",
+    "counter_evidence": "string[]",
+    "alternative_explanations": "string[]",
+    "confidence": "low|medium|high",
+    "equivalence_warning": "string|null"
+  }
+}
