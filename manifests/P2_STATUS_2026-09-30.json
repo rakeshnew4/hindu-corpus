@@ -1,0 +1,26 @@
+{
+  "phase": "P2",
+  "checked_at": "2026-09-30",
+  "sources": [
+    {
+      "id": "pali",
+      "repo": "tokushige-koyasan/pali-corpus",
+      "status": "missing_bytes",
+      "required_artifacts": ["immutable source archive", "upstream commit", "license/notice files", "sha256"],
+      "reproducible_path": "git clone --depth 1 https://github.com/tokushige-koyasan/pali-corpus.git"
+    },
+    {
+      "id": "chinese-buddhist-esoteric",
+      "repo": "tokushige-koyasan/kanseki-corpus",
+      "status": "missing_bytes",
+      "required_artifacts": ["immutable source archive", "upstream commit", "CBETA notice/license files", "sha256"],
+      "reproducible_path": "git clone --depth 1 https://github.com/tokushige-koyasan/kanseki-corpus.git"
+    }
+  ],
+  "missing_targets": [
+    "Jain Sanskrit/Prakrit",
+    "regional Indic traditions",
+    "broader Buddhist Sanskrit beyond current SARIT/GRETIL coverage"
+  ],
+  "policy": "Discovery or metadata is not counted as acquisition; do not claim bytes until repository contents and checksums are verified."
+}
