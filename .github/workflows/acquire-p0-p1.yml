@@ -33,19 +33,26 @@ jobs:
           - id: jyotisha
             repo: maximally0/jyotisha-corpus
           - id: raw-etexts
-            repo: sanskrit/raw_etexts/
+            repo: sanskrit/raw_etexts
     steps:
       - uses: actions/checkout@v4
         with:
           repository: ${{ matrix.repo }}
           fetch-depth: 1
-      - run: |
-          mkdir -p acquired
-          echo "${{ matrix.repo }}" > acquired/source.txt
-          git rev-parse HEAD > acquired/upstream_commit.txt
-          tar -czf "source-${{ matrix.repo }}" acquired .
+      - name: Package source with provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _acquisition_meta
+          printf '%s\n' '${{ matrix.id }}' > _acquisition_meta/source_id.txt
+          printf '%s\n' '${{ matrix.repo }}' > _acquisition_meta/upstream_repo.txt
+          git rev-parse HEAD > _acquisition_meta/upstream_commit.txt
+          git log -1 --format='%cI' > _acquisition_meta/upstream_commit_date.txt
+          find . -maxdepth 2 -type f \( -iname 'LICENSE*' -o -iname 'COPYING*' -o -iname 'NOTICE*' -o -iname 'README*' \) -print > _acquisition_meta/legal_files.txt || true
+          sha256sum _acquisition_meta/* > _acquisition_meta/meta.sha256
+          tar --exclude=.git -czf "p0-p1-${{ matrix.id }}.tar.gz" .
       - uses: actions/upload-artifact@v4
         with:
-          name: p0-p1-${{ matrix.repo }}
-          path: source-${{ matrix.repo }}
+          name: p0-p1-${{ matrix.id }}
+          path: p0-p1-${{ matrix.id }}.tar.gz
           retention-days: 30
