@@ -1,0 +1,25 @@
+{
+  "generated_at": "2026-09-30",
+  "repository": "rakeshnew4/hindu-corpus",
+  "status": "partial-acquisition",
+  "note": "Original local artifacts were checked and hashed. Large binary uploads are constrained by GitHub's 100 MB single-object limit; files above that limit must use Git LFS or external object storage.",
+  "local_artifacts": [
+    {"name":"layer2_all_subjects_200_each_master.zip","bytes":288719,"sha256":"39f659b10cf4c5efa43bad21a8989145846808b46a5c75eb0e2bc85e9b7da920","status":"available-locally"},
+    {"name":"whole_system_indic_rag_corpus_v1.zip","bytes":94831067,"sha256":"ce071c7eb77b3cd745d8b3fc701511319c32b03aea9c5c3e5a316251b9309272","status":"available-locally; under GitHub 100MB object limit but not yet pushed"},
+    {"name":"indian_knowledge_source_corpus_SARIT_processed.zip","bytes":129550281,"sha256":"82dceb5fc2cbc23c8238effcc9e3debef9a761b27303208bcf7076eaba6cd211","status":"available-locally; exceeds GitHub 100MB object limit; requires Git LFS or split/reassembly"},
+    {"name":"SARIT-corpus-master.zip","bytes":33582491,"status":"available-in-library"},
+    {"name":"indic_knowledge_P0-P5_acquisition_pack.zip","bytes":217689002,"status":"available-in-library; exceeds GitHub 100MB object limit"}
+  ],
+  "upstream_sources": [
+    "tokushige-koyasan/gretil-corpus",
+    "VedaWebProject/vedaweb-data",
+    "sanskrit-texts/rigveda",
+    "tokushige-koyasan/dcs-corpus",
+    "AnotherAdhikari/indic-primary-sources",
+    "rahular/itihasa",
+    "tokushige-koyasan/muktabodha-corpus",
+    "maximally0/jyotisha-corpus",
+    "sanskrit/raw_etexts"
+  ],
+  "reproducible_acquisition": ".github/workflows/acquire-p0-p1.yml"
+}
