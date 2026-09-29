@@ -15,16 +15,25 @@ jobs:
       fail-fast: false
       max-parallel: 8
       matrix:
-        repo:
-          - tokushige-koyasan/gretil-corpus
-          - VedaWebProject/vedaweb-data
-          - sanskrit-texts/rigveda
-          - tokushige-koyasan/dcs-corpus
-          - AnotherAdhikari/indic-primary-sources
-          - rahular/itihasa
-          - tokushige-koyasan/muktabodha-corpus
-          - maximally0/jyotisha-corpus
-          - sanskrit/raw_etexts
+        include:
+          - id: gretil
+            repo: tokushige-koyasan/gretil-corpus
+          - id: vedaweb-data
+            repo: VedaWebProject/vedaweb-data
+          - id: rigveda
+            repo: sanskrit-texts/rigveda
+          - id: dcs
+            repo: tokushige-koyasan/dcs-corpus
+          - id: indic-primary-sources
+            repo: AnotherAdhikari/indic-primary-sources
+          - id: itihasa
+            repo: rahular/itihasa
+          - id: muktabodha
+            repo: tokushige-koyasan/muktabodha-corpus
+          - id: jyotisha
+            repo: maximally0/jyotisha-corpus
+          - id: raw-etexts
+            repo: sanskrit/raw_etexts/
     steps:
       - uses: actions/checkout@v4
         with:
