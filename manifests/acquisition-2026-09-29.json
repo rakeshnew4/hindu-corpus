@@ -1,0 +1,76 @@
+{
+  "repository": "rakeshnew4/hindu-corpus",
+  "acquisition_run": {
+    "repo": "rakeshnew4/raki",
+    "run_id": 36595016014,
+    "commit": "23929fac9e57ec98f0952cfe021c6d49a9d67334"
+  },
+  "artifacts": [
+    {
+      "name": "indic-gretil-corpus",
+      "id": 11045681386,
+      "size_bytes": 57104598,
+      "sha256": "2578d715934462dd9056dc3a16fbe9273cb9598854ff813783ffbd8f6a8a236b"
+    },
+    {
+      "name": "indic-muktabodha-corpus",
+      "id": 11046295539,
+      "size_bytes": 43623158,
+      "sha256": "8727e4a1fdf39d73e761b2a675aef48181036c819524c96905c3ba9b18c0ffcf"
+    },
+    {
+      "name": "indic-dcs-corpus",
+      "id": 11045307837,
+      "size_bytes": 208862757,
+      "sha256": "640d8e30c32f48f397c97210e20cc8341d2dc9d90681819e82fe91a314498ddb"
+    },
+    {
+      "name": "sanskrit-linguistic-data",
+      "id": 11045278000,
+      "size_bytes": 1551648,
+      "sha256": "df700c4cccb49fc8d88e820be08bfacf52c2f69856d25e96bc627adfb028d179"
+    },
+    {
+      "name": "selected-indic-primary-texts",
+      "id": 11045498067,
+      "size_bytes": 4527598,
+      "sha256": "ff909887bf946aafe0e497c2132fa9ef38361ffdae7db028230600ef0032c04b"
+    },
+    {
+      "name": "human-biology-ontologies",
+      "id": 11046111430,
+      "size_bytes": 6374253,
+      "sha256": "187154887ef9d5fa5a01bc8b3ccc931fe7100eb19334fb12f4abcd807cb86d47"
+    },
+    {
+      "name": "indic-source-normalized-manifests",
+      "id": 11045547832,
+      "size_bytes": 996370,
+      "sha256": "7ef5e4c3af603251888393a87e6335b9d55df96bdfba1b0d51aa4cdc54024770"
+    },
+    {
+      "name": "human-reference-atlas-ccf-part-00",
+      "id": 11045502893,
+      "size_bytes": 416868229,
+      "sha256": "0c2c1e20921654ba03b516544537572db6f02416fd9bb67122772af676315eba"
+    },
+    {
+      "name": "human-reference-atlas-ccf-part-01",
+      "id": 11046395545,
+      "size_bytes": 418035166,
+      "sha256": "6ce6b7cedf1049314821394035bcd3c080a74c1b2f0d21430e93018da36b229f"
+    },
+    {
+      "name": "human-reference-atlas-ccf-part-02",
+      "id": 11045836844,
+      "size_bytes": 416020649,
+      "sha256": "86c70656742bb7026f4bcf5b95e0187a7ef410540f4413eea356ab49c14306e8"
+    },
+    {
+      "name": "human-reference-atlas-ccf-part-03",
+      "id": 11046226332,
+      "size_bytes": 354317004,
+      "sha256": "586abfa8a5849536f14ffbc421f37c09e7aa5255ceb58ca6f512325b2a04abbb"
+    }
+  ]
+}
