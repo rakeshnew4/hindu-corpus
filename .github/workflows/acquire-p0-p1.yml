@@ -1,4 +1,4 @@
-name: Acquire P0 P1 source bytes
+name: Acquire and publish P0 P1 source bytes
 
 on:
   workflow_dispatch:
@@ -8,14 +8,14 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  acquire:
+  acquire_publish:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 8
+      max-parallel: 1
       matrix:
         include:
           - id: gretil
@@ -37,24 +37,68 @@ jobs:
           - id: raw-etexts
             repo: sanskrit/raw_etexts
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout source
+        uses: actions/checkout@v4
         with:
           repository: ${{ matrix.repo }}
           fetch-depth: 1
-      - name: Package source with provenance
+          path: _source
+      - name: Checkout corpus target
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: p0-p1-data
+          fetch-depth: 1
+          path: _target
+          token: ${{ github.token }}
+        continue-on-error: true
+      - name: Initialize target branch if needed
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p _acquisition_meta
-          printf '%s\n' '${{ matrix.id }}' > _acquisition_meta/source_id.txt
-          printf '%s\n' '${{ matrix.repo }}' > _acquisition_meta/upstream_repo.txt
-          git rev-parse HEAD > _acquisition_meta/upstream_commit.txt
-          git log -1 --format='%cI' > _acquisition_meta/upstream_commit_date.txt
-          find . -maxdepth 2 -type f \( -iname 'LICENSE*' -o -iname 'COPYING*' -o -iname 'NOTICE*' -o -iname 'README*' \) -print > _acquisition_meta/legal_files.txt || true
-          sha256sum _acquisition_meta/* > _acquisition_meta/meta.sha256
-          tar --exclude=.git -czf "p0-p1-${{ matrix.id }}.tar.gz" .
-      - uses: actions/upload-artifact@v4
-        with:
-          name: p0-p1-${{ matrix.id }}
-          path: p0-p1-${{ matrix.id }}.tar.gz
-          retention-days: 30
+          if [ ! -d _target/.git ]; then
+            rm -rf _target
+            git clone --depth=1 "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" _target
+            cd _target
+            git checkout -b p0-p1-data origin/main || git checkout p0-p1-data
+          fi
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Package source and publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          id='${{ matrix.id }}'
+          repo='${{ matrix.repo }}'
+          src_commit=$(git -C _source rev-parse HEAD)
+          src_date=$(git -C _source log -1 --format='%cI')
+          mkdir -p _work _target/data/p0-p1/sources/${id}
+          printf '%s\n' "$id" > _work/source_id.txt
+          printf '%s\n' "$repo" > _work/upstream_repo.txt
+          printf '%s\n' "$src_commit" > _work/upstream_commit.txt
+          printf '%s\n' "$src_date" > _work/upstream_commit_date.txt
+          find _source -maxdepth 2 -type f \( -iname 'LICENSE*' -o -iname 'COPYING*' -o -iname 'NOTICE*' -o -iname 'README*' \) -print | sort > _work/legal_files.txt || true
+          tar --exclude=.git --exclude='./p0-p1-*' -C _source -czf "_work/${id}.tar.gz" .
+          sha256sum "_work/${id}.tar.gz" > "_work/${id}.tar.gz.sha256"
+          size=$(stat -c '%s' "_work/${id}.tar.gz")
+          if [ "$size" -gt 94371840 ]; then
+            split -b 90m -d -a 4 "_work/${id}.tar.gz" "_work/${id}.tar.gz.part-"
+            cp "_work/${id}.tar.gz.sha256" "_work/WHOLE_ARCHIVE_SHA256.txt"
+            rm "_work/${id}.tar.gz"
+          fi
+          cp _work/source_id.txt _work/upstream_repo.txt _work/upstream_commit.txt _work/upstream_commit_date.txt _work/legal_files.txt "_target/data/p0-p1/sources/${id}/"
+          cp _work/*.tar.gz.sha256 _work/WHOLE_ARCHIVE_SHA256.txt "_target/data/p0-p1/sources/${id}/" 2>/dev/null || true
+          find _work -maxdepth 1 -type f -name "${id}.tar.gz.part-*" -exec cp {} "_target/data/p0-p1/sources/${id}/" \; || true
+          if [ -f "_work/${id}.tar.gz" ]; then cp "_work/${id}.tar.gz" "_target/data/p0-p1/sources/${id}/"; fi
+          (cd _target && find "data/p0-p1/sources/${id}" -type f -print0 | sort -z | xargs -0 sha256sum > "data/p0-p1/sources/${id}/FILES.sha256")
+          cd _target
+          git config user.name 'hindu-corpus acquisition bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "data/p0-p1/sources/${id}"
+          git commit -m "acquire P0/P1 source: ${id}" || true
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin p0-p1-data || true
+            if git push origin HEAD:p0-p1-data; then exit 0; fi
+            sleep $((attempt*5))
+          done
+          exit 1
