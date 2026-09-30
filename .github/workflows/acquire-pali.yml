@@ -2,7 +2,7 @@ name: Acquire P2 Pali corpus
 
 on:
   push:
-    branches: [p2-data]
+    branches: [main, p2-data]
     paths:
       - ".github/workflows/acquire-pali.yml"
   workflow_dispatch:
