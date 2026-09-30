@@ -1,0 +1,94 @@
+name: Acquire Veda and Upanishad Corpus
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download GRETIL Sanskrit corpus
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 3 -o /tmp/gretil.zip https://gretil.sub.uni-goettingen.de/gretil/1_sanskr.zip
+          mkdir -p /tmp/gretil
+          unzip -q /tmp/gretil.zip -d /tmp/gretil
+
+      - name: Download Indic Primary Sources
+        run: |
+          set -euo pipefail
+          git clone --depth 1 https://github.com/AnotherAdhikari/indic-primary-sources.git /tmp/ips
+
+      - name: Load Veda and Upanishad texts
+        run: |
+          set -euo pipefail
+          mkdir -p datasets/p0/P0/Veda/GRETIL datasets/p0/P0/Upanishads/GRETIL
+          mkdir -p datasets/p0/P0/Veda/Indic_Primary_Sources
+
+          GRE=/tmp/gretil/gretil-corpus-main/1_veda
+
+          # GRETIL Vedic Samhita files that are actually available in the acquired corpus.
+          find "$GRE/1_sam" -maxdepth 1 -type f -name '*.txt' -exec cp {} datasets/p0/P0/Veda/GRETIL/ \;
+
+          # GRETIL Upanishad texts and documented alternative/commentary versions.
+          find "$GRE/4_upa" -maxdepth 1 -type f -name '*.txt' -exec cp {} datasets/p0/P0/Upanishads/GRETIL/ \;
+
+          # Public-domain/CC corpus package: Four Vedas + Atharva Veda.
+          cp /tmp/ips/corpus/vedas_upanishads/four_vedas_complete/extracted_text.txt datasets/p0/P0/Veda/Indic_Primary_Sources/four_vedas_complete.txt
+          cp /tmp/ips/corpus/vedas_upanishads/atharva_veda_bloomfield_sbe42_1897/extracted_text.txt datasets/p0/P0/Veda/Indic_Primary_Sources/atharva_veda_bloomfield_sbe42_1897.txt
+
+          cat > datasets/p0/P0/Veda/GRETIL/SOURCE.md <<'EOF'
+          Source: GRETIL, Göttingen Register of Electronic Texts in Indian Languages.
+          Download: https://gretil.sub.uni-goettingen.de/gretil/1_sanskr.zip
+          Scope: files under 1_veda/1_sam.
+          Preserve source filenames and do not infer missing Vedic Samhitas.
+          EOF
+
+          cat > datasets/p0/P0/Upanishads/GRETIL/SOURCE.md <<'EOF'
+          Source: GRETIL, Göttingen Register of Electronic Texts in Indian Languages.
+          Download: https://gretil.sub.uni-goettingen.de/gretil/1_sanskr.zip
+          Scope: files under 1_veda/4_upa.
+          GRETIL availability is not the same as a claim that every principal Upanishad is present.
+          Preserve source filenames and recension/commentary distinctions.
+          EOF
+
+          cat > datasets/p0/P0/Veda/Indic_Primary_Sources/SOURCE.md <<'EOF'
+          Source: AnotherAdhikari/indic-primary-sources.
+          Repository: https://github.com/AnotherAdhikari/indic-primary-sources
+          Scope: four_vedas_complete and atharva_veda_bloomfield_sbe42_1897 extracted texts.
+          Source licensing/provenance must be checked against the upstream repository before redistribution.
+          EOF
+
+      - name: Validate
+        run: |
+          set -euo pipefail
+          test -s datasets/p0/P0/Veda/Indic_Primary_Sources/four_vedas_complete.txt
+          test -s datasets/p0/P0/Veda/Indic_Primary_Sources/atharva_veda_bloomfield_sbe42_1897.txt
+          test -s datasets/p0/P0/Veda/GRETIL/sa_Rgveda-edAufrecht.txt
+          test -s datasets/p0/P0/Upanishads/GRETIL/sa_kathopaniSad.txt
+          VEDA_COUNT=$(find datasets/p0/P0/Veda/GRETIL -maxdepth 1 -type f -name '*.txt' | wc -l)
+          UP_COUNT=$(find datasets/p0/P0/Upanishads/GRETIL -maxdepth 1 -type f -name '*.txt' | wc -l)
+          echo "GRETIL Veda/Samhita files: $VEDA_COUNT"
+          echo "GRETIL Upanishad files: $UP_COUNT"
+          printf '%s\n' "GRETIL Veda/Samhita files: $VEDA_COUNT" "GRETIL Upanishad files: $UP_COUNT" > datasets/p0/P0/CORPUS_VALIDATION.txt
+
+      - name: Commit acquired corpus
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add datasets/p0/P0
+          if git diff --cached --quiet; then
+            echo "No corpus changes."
+            exit 0
+          fi
+          git commit -m "Load Veda and Upanishad source corpus"
+          git push
