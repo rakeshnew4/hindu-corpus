@@ -1,0 +1,9 @@
+{
+  "phase": "P2",
+  "sources": [
+    {"id":"pali","repo":"tokushige-koyasan/pali-corpus","license_note":"VRI-derived text; verify repository LICENSE.md and attribution/non-commercial conditions."},
+    {"id":"chinese-buddhist-esoteric","repo":"tokushige-koyasan/kanseki-corpus","license_note":"CC BY-NC-SA 4.0; preserve CBETA attribution and NOTICE_CBETA.md."}
+  ],
+  "missing_targets": ["Jain Sanskrit/Prakrit", "regional Indic traditions", "broader Buddhist Sanskrit beyond current SARIT/GRETIL coverage"],
+  "rule": "Do not mark a missing target acquired until immutable source bytes, provenance and license metadata are present."
+}

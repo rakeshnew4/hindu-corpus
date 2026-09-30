@@ -1,0 +1,85 @@
+name: Acquire P2 Pali corpus
+
+on:
+  push:
+    branches: [main, p2-data]
+    paths:
+      - ".github/workflows/acquire-pali.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout canonical corpus
+        uses: actions/checkout@v4
+        with:
+          ref: p2-data
+          fetch-depth: 0
+
+      - name: Acquire pinned upstream bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC_REPO="https://github.com/tokushige-koyasan/pali-corpus.git"
+          SRC_COMMIT="a58c378cf790d28db400de8841cb01b14388259a"
+          WORK="$RUNNER_TEMP/pali"
+          rm -rf "$WORK"
+          git clone --filter=blob:none "$SRC_REPO" "$WORK/repo"
+          cd "$WORK/repo"
+          git checkout --detach "$SRC_COMMIT"
+
+          mkdir -p "$GITHUB_WORKSPACE/data/p2/sources/pali"
+          tar --exclude=.git -czf "$GITHUB_WORKSPACE/data/p2/sources/pali/pali-${SRC_COMMIT}.tar.gz" -C "$WORK/repo" .
+          sha256sum "$GITHUB_WORKSPACE/data/p2/sources/pali/pali-${SRC_COMMIT}.tar.gz" > "$GITHUB_WORKSPACE/data/p2/sources/pali/FILES.sha256"
+
+          cat > "$GITHUB_WORKSPACE/data/p2/sources/pali/PROVENANCE.md" <<EOF
+          # P2 Pali source provenance
+
+          - Upstream repository: $SRC_REPO
+          - Pinned upstream commit: $SRC_COMMIT
+          - Acquisition date: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          - Archive: pali-${SRC_COMMIT}.tar.gz
+          - Archive SHA-256: $(cut -d' ' -f1 "$GITHUB_WORKSPACE/data/p2/sources/pali/FILES.sha256")
+          - Upstream scope: 217 Pali texts
+          - Upstream edition/provenance: VRI Chatttha Sangayana edition as documented by upstream
+          - Licensing note: preserve upstream README/NOTICE/license terms; text follows VRI non-commercial/attribution conditions documented upstream; catalog/documentation has separate CC BY-NC 4.0 terms.
+          - Canonical policy: original upstream bytes are preserved in this archive; any normalized/RAG representation must be derived and must retain this provenance.
+          EOF
+
+          cat > "$GITHUB_WORKSPACE/data/p2/sources/pali/ACQUISITION.json" <<EOF
+          {
+            "source_id": "pali",
+            "phase": "P2",
+            "upstream_repo": "$SRC_REPO",
+            "upstream_commit": "$SRC_COMMIT",
+            "archive": "pali-${SRC_COMMIT}.tar.gz",
+            "sha256": "$(cut -d' ' -f1 "$GITHUB_WORKSPACE/data/p2/sources/pali/FILES.sha256")",
+            "scope": "217 Pali texts",
+            "raw_bytes_preserved": true,
+            "license_review_required": true,
+            "rag_ready": false
+          }
+          EOF
+
+      - name: Check archive size
+        shell: bash
+        run: |
+          set -euo pipefail
+          f="data/p2/sources/pali/pali-a58c378cf790d28db400de8841cb01b14388259a.tar.gz"
+          bytes=$(stat -c%s "$f")
+          echo "Archive bytes: $bytes"
+          test "$bytes" -lt 95000000
+
+      - name: Commit acquired bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hindu-corpus acquisition bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/p2/sources/pali
+          git commit -m "data(p2): acquire pinned Pali corpus" || exit 0
+          git push origin HEAD:p2-data
