@@ -1,0 +1,12 @@
+{
+  "source_id": "pali",
+  "phase": "P2",
+  "upstream_repo": "https://github.com/tokushige-koyasan/pali-corpus.git",
+  "upstream_commit": "a58c378cf790d28db400de8841cb01b14388259a",
+  "archive": "pali-a58c378cf790d28db400de8841cb01b14388259a.tar.gz",
+  "sha256": "0524bd6af6742038e6d51e735df6eeccaa951abf67b13b10ce510c5e192860be",
+  "scope": "217 Pali texts",
+  "raw_bytes_preserved": true,
+  "license_review_required": true,
+  "rag_ready": false
+}
