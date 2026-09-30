@@ -6,15 +6,64 @@
       "id": "pali",
       "repo": "tokushige-koyasan/pali-corpus",
       "status": "missing_bytes",
-      "required_artifacts": ["immutable source archive", "upstream commit", "license/notice files", "sha256"],
+      "required_artifacts": [
+        "immutable source archive",
+        "upstream commit",
+        "license/notice files",
+        "sha256"
+      ],
       "reproducible_path": "git clone --depth 1 https://github.com/tokushige-koyasan/pali-corpus.git"
     },
     {
       "id": "chinese-buddhist-esoteric",
       "repo": "tokushige-koyasan/kanseki-corpus",
       "status": "missing_bytes",
-      "required_artifacts": ["immutable source archive", "upstream commit", "CBETA notice/license files", "sha256"],
+      "required_artifacts": [
+        "immutable source archive",
+        "upstream commit",
+        "CBETA notice/license files",
+        "sha256"
+      ],
       "reproducible_path": "git clone --depth 1 https://github.com/tokushige-koyasan/kanseki-corpus.git"
+    },
+    {
+      "id": "jyotisha-corpus-research-layer",
+      "repo": "maximally0/jyotisha-corpus",
+      "status": "candidate_research_source",
+      "required_artifacts": [
+        "registry",
+        "public-domain text files where rights permit",
+        "rights metadata",
+        "sha256"
+      ],
+      "reproducible_path": "https://github.com/maximally0/jyotisha-corpus",
+      "note": "Research-oriented Jyotisha corpus; separate public-domain source texts from catalog-only/copyright material."
+    },
+    {
+      "id": "parashara-tantra-samhita",
+      "repo": "vishvasa.github.io/jyotiSham",
+      "status": "candidate_research_source",
+      "required_artifacts": [
+        "source edition/scan or permitted text",
+        "rights metadata",
+        "sha256"
+      ],
+      "reproducible_path": "https://vishvasa.github.io/jyotiSham/observation/history/hindu/parAshara-tantram/",
+      "note": "Search evidence identifies Parasharatantra, sometimes denoted Parasharasamhita, as a reconstructed compilation from quotations; original manuscript/text is not claimed available."
+    },
+    {
+      "id": "arasara-samhita",
+      "repo": null,
+      "status": "unresolved_title_alias",
+      "required_artifacts": [
+        "exact title identification",
+        "language/script",
+        "source bytes or catalog evidence",
+        "rights metadata",
+        "sha256 if acquired"
+      ],
+      "reproducible_path": null,
+      "note": "Exact 'Arasara Samhita' title could not be verified in current web search. Do not substitute Parashara Samhita without confirmation; retain as an explicit discovery target."
     }
   ],
   "missing_targets": [
@@ -22,5 +71,27 @@
     "regional Indic traditions",
     "broader Buddhist Sanskrit beyond current SARIT/GRETIL coverage"
   ],
-  "policy": "Discovery or metadata is not counted as acquisition; do not claim bytes until repository contents and checksums are verified."
+  "policy": "Discovery or metadata is not counted as acquisition; do not claim bytes until repository contents and checksums are verified.",
+  "jyotisha_expansion": {
+    "requested": true,
+    "scope": [
+      "classical Jyotisha",
+      "Brihat Samhita",
+      "Parashara/Parasharatantra",
+      "Jyotisha astronomy",
+      "Muhurta",
+      "Prashna",
+      "Tajika",
+      "Nadi",
+      "Jaimini",
+      "Parashari",
+      "Nakshatra",
+      "Panchanga",
+      "Siddhanta",
+      "commentaries",
+      "translations",
+      "software/calculation libraries"
+    ],
+    "policy": "Metadata/discovery is not acquisition; preserve source editions and rights separately."
+  }
 }
